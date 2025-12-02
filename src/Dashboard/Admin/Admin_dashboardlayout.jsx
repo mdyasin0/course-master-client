@@ -10,10 +10,10 @@ const AdminDashboard = () => {
         </h2>
         <nav className="flex-1 p-4 space-y-2">
           <Link
-            to="courses"
+            to="/admindashboard/coursemanage"
             className="block py-2 px-4 rounded hover:bg-[#3B82F6]"
           >
-            Courses
+            Courses-manage
           </Link>
           <Link
             to = "/admindashboard/coursecreate"

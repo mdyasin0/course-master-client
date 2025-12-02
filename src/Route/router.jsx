@@ -8,6 +8,9 @@ import AdminDashboard from "../Dashboard/Admin/Admin_dashboardlayout";
 import StudentDashboardLayout from "../Dashboard/Student/Student_dashboard-layout";
 import CourseCreate from "../Dashboard/Admin/Create-course";
 import CourseDetails from "../Pages/CourseDetails";
+import CourseManage from "../Dashboard/Admin/CourseManage";
+import AdminCourseDetails from "../Dashboard/Admin/Admincoursedetails";
+import AdminCourseUpdate from "../Dashboard/Admin/AdminCourseUpdate";
 
 
 
@@ -35,6 +38,15 @@ const router = createBrowserRouter([
         {
             path: "/admindashboard/coursecreate" ,
             element: <CourseCreate/> ,
+        },{
+          path:"/admindashboard/coursemanage" ,
+          element: <CourseManage/> ,
+        },{
+          path: "/admindashboard/admincoursedetails/:id",
+          element: <AdminCourseDetails/> ,
+        },{
+          path:"/admindashboard/Admincourseupdate/:id" ,
+          element: <AdminCourseUpdate/> ,
         }
        ]
       },
