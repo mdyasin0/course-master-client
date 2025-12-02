@@ -9,7 +9,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-[#F9FAFB] shadow-md">
+    <nav className="bg-[#F9FAFB] sticky top-0 shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           {/* Left: Logo / Website Name */}
@@ -25,8 +25,11 @@ const Navbar = () => {
             <Link to="/courses" className="hover:text-[#3B82F6]">
               Courses
             </Link>
-            <Link to="/dashboard" className="hover:text-[#3B82F6]">
-              Dashboard
+            <Link to="/admindashboard" className="hover:text-[#3B82F6]">
+              aDashboard
+            </Link>
+             <Link to="/studentdashboard" className="hover:text-[#3B82F6]">
+              sDashboard
             </Link>
             <Link to="/login" className="hover:text-[#3B82F6]">
               Login
@@ -97,10 +100,16 @@ const Navbar = () => {
             Courses
           </Link>
           <Link
-            to="/dashboard"
+            to="/studentdashboard"
             className="block px-3 py-2 rounded-md hover:bg-[#E0E7FF]"
           >
-            Dashboard
+            sDashboard
+          </Link>
+          <Link
+            to="/admindashboard"
+            className="block px-3 py-2 rounded-md hover:bg-[#E0E7FF]"
+          >
+            <area shape="" coords="" href="" alt="" />aDashboard
           </Link>
           <Link
             to="/login"
