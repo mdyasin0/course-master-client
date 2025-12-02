@@ -2,7 +2,7 @@ import { Link } from "react-router";
 
 const Footer = () => {
   return (
-    <footer className="bg-[#F9FAFB] text-[#111827] shadow-inner mt-12">
+    <footer className="bg-[#F9FAFB] text-[#111827] shadow-inner ">
       <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         
         {/* Top: Info + Links */}

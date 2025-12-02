@@ -1,60 +1,110 @@
-import React, { useState } from "react";
-import { Link } from "react-router";
+import { useState, useContext } from "react";
+import { NavLink } from "react-router";
+import { AuthContext } from "../Provider/Context";
+
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { user, logout } = useContext(AuthContext);
 
-  const toggleMenu = () => {
-    setIsOpen(!isOpen);
+  const toggleMenu = () => setIsOpen(!isOpen);
+
+  const handleLogout = async () => {
+    await logout();
   };
 
+  // Active link style
+  const activeClass =
+    "text-[#3B82F6] font-bold border-b-2 border-[#3B82F6] pb-1";
+  const normalClass = "hover:text-[#3B82F6]";
+
   return (
-    <nav className="bg-[#F9FAFB] sticky top-0 shadow-md">
+    <nav className="bg-[#F9FAFB] sticky top-0 shadow-md z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
-          {/* Left: Logo / Website Name */}
-          <div className=" text-2xl font-bold text-[#4F46E5]">
-            <Link to="/">Course-Master</Link>
+          {/* Left Side Logo */}
+          <div className="text-2xl font-bold text-[#4F46E5]">
+            <NavLink to="/">Course-Master</NavLink>
           </div>
 
-          {/* Right: Links */}
+          {/* Desktop Menu */}
           <div className="hidden md:flex space-x-6 items-center text-[#111827] font-medium">
-            <Link to="/" className="hover:text-[#3B82F6]">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                isActive ? activeClass : normalClass
+              }
+            >
               Home
-            </Link>
-            <Link to="/courses" className="hover:text-[#3B82F6]">
+            </NavLink>
+
+            <NavLink
+              to="/courses"
+              className={({ isActive }) =>
+                isActive ? activeClass : normalClass
+              }
+            >
               Courses
-            </Link>
-            <Link to="/admindashboard" className="hover:text-[#3B82F6]">
+            </NavLink>
+
+            <NavLink
+              to="/admindashboard"
+              className={({ isActive }) =>
+                isActive ? activeClass : normalClass
+              }
+            >
               aDashboard
-            </Link>
-             <Link to="/studentdashboard" className="hover:text-[#3B82F6]">
+            </NavLink>
+
+            <NavLink
+              to="/studentdashboard"
+              className={({ isActive }) =>
+                isActive ? activeClass : normalClass
+              }
+            >
               sDashboard
-            </Link>
-            <Link to="/login" className="hover:text-[#3B82F6]">
-              Login
-            </Link>
-            <Link to="/register" className="hover:text-[#3B82F6]">
-              Register
-            </Link>
-            <Link to="/logout" className="hover:text-[#FBBF24]">
-              Logout
-            </Link>
+            </NavLink>
+
+            {/* CONDITIONAL UI */}
+            {!user ? (
+              <>
+                <NavLink
+                  to="/login"
+                  className={({ isActive }) =>
+                    isActive ? activeClass : normalClass
+                  }
+                >
+                  Login
+                </NavLink>
+
+                <NavLink
+                  to="/register"
+                  className={({ isActive }) =>
+                    isActive ? activeClass : normalClass
+                  }
+                >
+                  Register
+                </NavLink>
+              </>
+            ) : (
+              <button
+                onClick={handleLogout}
+                className="text-red-500 font-semibold hover:text-red-600"
+              >
+                Logout
+              </button>
+            )}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Menu Toggle */}
           <div className="md:hidden flex items-center">
-            <button
-              onClick={toggleMenu}
-              className="text-[#111827] focus:outline-none"
-            >
+            <button onClick={toggleMenu} className="text-[#111827]">
               {isOpen ? (
                 <svg
                   className="w-6 h-6"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
                     strokeLinecap="round"
@@ -69,7 +119,6 @@ const Navbar = () => {
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
                     strokeLinecap="round"
@@ -86,49 +135,59 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden px-2 pt-2 pb-4 space-y-1 bg-[#F9FAFB] shadow-md">
-          <Link
+        <div className="md:hidden px-4 pb-4 space-y-2 bg-[#F9FAFB] shadow-md">
+          <NavLink
             to="/"
             className="block px-3 py-2 rounded-md hover:bg-[#E0E7FF]"
           >
             Home
-          </Link>
-          <Link
+          </NavLink>
+
+          <NavLink
             to="/courses"
             className="block px-3 py-2 rounded-md hover:bg-[#E0E7FF]"
           >
             Courses
-          </Link>
-          <Link
+          </NavLink>
+
+          <NavLink
             to="/studentdashboard"
             className="block px-3 py-2 rounded-md hover:bg-[#E0E7FF]"
           >
             sDashboard
-          </Link>
-          <Link
+          </NavLink>
+
+          <NavLink
             to="/admindashboard"
             className="block px-3 py-2 rounded-md hover:bg-[#E0E7FF]"
           >
-            <area shape="" coords="" href="" alt="" />aDashboard
-          </Link>
-          <Link
-            to="/login"
-            className="block px-3 py-2 rounded-md hover:bg-[#E0E7FF]"
-          >
-            Login
-          </Link>
-          <Link
-            to="/register"
-            className="block px-3 py-2 rounded-md hover:bg-[#E0E7FF]"
-          >
-            Register
-          </Link>
-          <Link
-            to="/logout"
-            className="block px-3 py-2 rounded-md hover:bg-[#FBBF24]"
-          >
-            Logout
-          </Link>
+            aDashboard
+          </NavLink>
+
+          {!user ? (
+            <>
+              <NavLink
+                to="/login"
+                className="block px-3 py-2 rounded-md hover:bg-[#E0E7FF]"
+              >
+                Login
+              </NavLink>
+
+              <NavLink
+                to="/register"
+                className="block px-3 py-2 rounded-md hover:bg-[#E0E7FF]"
+              >
+                Register
+              </NavLink>
+            </>
+          ) : (
+            <button
+              onClick={handleLogout}
+              className="block px-3 py-2 rounded-md text-red-500 font-semibold"
+            >
+              Logout
+            </button>
+          )}
         </div>
       )}
     </nav>

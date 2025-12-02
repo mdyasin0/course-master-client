@@ -11,6 +11,8 @@ import CourseDetails from "../Pages/CourseDetails";
 import CourseManage from "../Dashboard/Admin/CourseManage";
 import AdminCourseDetails from "../Dashboard/Admin/Admincoursedetails";
 import AdminCourseUpdate from "../Dashboard/Admin/AdminCourseUpdate";
+import ProtectedRoute from "../Provider/ProtectedRoute";
+import AdminEnrollments from "../Dashboard/Admin/AdminEnrollments";
 
 
 
@@ -26,7 +28,11 @@ const router = createBrowserRouter([
       },
       {
       path: "/coursedetails/:id" ,
-      element: <CourseDetails/> ,
+      element:  (
+        <ProtectedRoute>
+<CourseDetails/>
+        </ProtectedRoute>
+      )  ,
       },
       {
          path: "/studentdashboard" ,
@@ -47,6 +53,9 @@ const router = createBrowserRouter([
         },{
           path:"/admindashboard/Admincourseupdate/:id" ,
           element: <AdminCourseUpdate/> ,
+        },{
+         path: "/admindashboard/adminenrollments" ,
+         element: <AdminEnrollments/> ,
         }
        ]
       },

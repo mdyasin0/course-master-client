@@ -22,10 +22,10 @@ const AdminDashboard = () => {
             Create Course
           </Link>
           <Link
-            to="students"
+            to="/admindashboard/adminenrollments"
             className="block py-2 px-4 rounded hover:bg-[#3B82F6]"
           >
-            Students
+            manage-enrollments
           </Link>
           <Link
             to="assignments"

@@ -1,14 +1,41 @@
-import React, { useState } from "react";
+import { useState, useContext } from "react";
+import { AuthContext } from "../Provider/Context";
 
 const Register = () => {
+  const { register } = useContext(AuthContext);
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-   
-    console.log({ name, email, password });
+    try {
+     
+      const firebaseUser = await register(email, password);
+
+      if (firebaseUser.user.uid) {
+        // If Firebase registration successful, save user in MongoDB
+        const userData = { name, email, password }; // password will be hashed in backend
+
+        const res = await fetch("http://localhost:5000/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(userData),
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          alert("Registration Successful!");
+          window.location.href = "/login";
+        } else {
+          alert(data.message || "Registration failed!");
+        }
+      }
+    } catch (error) {
+      alert(error.message);
+    }
   };
 
   return (
@@ -59,7 +86,10 @@ const Register = () => {
           </button>
         </form>
         <p className="text-[#6B7280] mt-4 text-center text-sm">
-          Already have an account? <a href="/login" className="text-[#4F46E5] hover:text-[#3B82F6]">Login</a>
+          Already have an account?{" "}
+          <a href="/login" className="text-[#4F46E5] hover:text-[#3B82F6]">
+            Login
+          </a>
         </p>
       </div>
     </div>

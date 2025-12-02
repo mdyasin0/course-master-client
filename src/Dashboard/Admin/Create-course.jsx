@@ -117,7 +117,6 @@ const CourseCreate = () => {
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-
         {/* Course Thumbnail */}
         <div>
           <label className="block font-medium mb-1">Course Thumbnail</label>
