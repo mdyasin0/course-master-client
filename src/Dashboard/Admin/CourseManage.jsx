@@ -5,7 +5,7 @@ const CourseManage = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch all courses
+ 
   const fetchCourses = () => {
     fetch("http://localhost:5000/courses")
       .then((res) => res.json())
@@ -33,7 +33,8 @@ const CourseManage = () => {
         .then((data) => {
           if (data.success) {
             alert("Course deleted successfully!");
-            setCourses(courses.filter((c) => c._id !== id)); // remove from table
+            setCourses(courses.filter((c) => c._id !== id)); 
+            // remove from table
           } else {
             alert("Delete failed!");
           }

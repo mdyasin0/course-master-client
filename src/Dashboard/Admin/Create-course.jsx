@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 
 const CourseCreate = () => {
   const [course, setCourse] = useState({
@@ -12,68 +12,80 @@ const CourseCreate = () => {
   });
 
   const [thumbnail, setThumbnail] = useState(null);
-  const [videoLinks, setVideoLinks] = useState([""]); // at least 1 input
-
+  const [videoLinks, setVideoLinks] = useState([""]);
+  const [assignments, setAssignments] = useState([
+    { title: "", description: "", link: "" },
+  ]);
   const [loading, setLoading] = useState(false);
 
-  // ---------------------------
-  // Handle normal input field
-  // ---------------------------
   const handleChange = (e) => {
     setCourse({ ...course, [e.target.name]: e.target.value });
   };
 
-  // ---------------------------
-  // Add More Video Link
-  // ---------------------------
-  const addMoreVideo = () => {
-    setVideoLinks([...videoLinks, ""]);
-  };
+  // ---------------- Video Handlers ----------------
+  const addMoreVideo = () => setVideoLinks([...videoLinks, ""]);
 
-  const handleVideoChange = (index, value) => {
+  const handleVideoChange = (i, value) => {
     const updated = [...videoLinks];
-    updated[index] = value;
+    updated[i] = value;
     setVideoLinks(updated);
   };
 
-  // ---------------------------
-  // Thumbnail upload to imgbb
-  // ---------------------------
+  const removeVideo = (i) => {
+    if (videoLinks.length > 1) {
+      const updated = videoLinks.filter((_, index) => index !== i);
+      setVideoLinks(updated);
+    } else {
+      alert("At least one video is required!");
+    }
+  };
+
+  // ---------------- Assignment Handlers ----------------
+  const addMoreAssignment = () =>
+    setAssignments([...assignments, { title: "", description: "", link: "" }]);
+
+  const handleAssignmentChange = (index, field, value) => {
+    const updated = [...assignments];
+    updated[index][field] = value;
+    setAssignments(updated);
+  };
+
+  const removeAssignment = (i) => {
+    if (assignments.length > 1) {
+      const updated = assignments.filter((_, index) => index !== i);
+      setAssignments(updated);
+    } else {
+      alert("At least one assignment is required!");
+    }
+  };
+
+  // ---------------- Thumbnail Upload ----------------
   const uploadThumbnailToImgBB = async () => {
     const formData = new FormData();
     formData.append("image", thumbnail);
 
     const res = await fetch(
       `https://api.imgbb.com/1/upload?key=c0c2b847b1b59290ac14668dd140a262`,
-      {
-        method: "POST",
-        body: formData,
-      }
+      { method: "POST", body: formData }
     );
-
     const data = await res.json();
-    return data.data.url; // return hosted url
+    return data.data.url;
   };
 
-  // ---------------------------
-  // Submit Form
-  // ---------------------------
+  // ---------------- Form Submit ----------------
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
       let thumbnailUrl = "";
-
-      // Upload Thumbnail if selected
-      if (thumbnail) {
-        thumbnailUrl = await uploadThumbnailToImgBB();
-      }
+      if (thumbnail) thumbnailUrl = await uploadThumbnailToImgBB();
 
       const finalCourseData = {
         ...course,
         thumbnail: thumbnailUrl,
-        lessons: videoLinks, // all video links
+        lessons: videoLinks,
+        assignments,
       };
 
       const res = await fetch("http://localhost:5000/create-course", {
@@ -83,20 +95,14 @@ const CourseCreate = () => {
       });
 
       const data = await res.json();
-
-      if (data.success) {
-        alert("Course created successfully!");
-      } else {
-        alert("Failed to create course!");
-      }
+      if (data.success) alert("Course created successfully!");
+      else alert("Failed to create course!");
     } catch (error) {
       console.error(error);
       alert("Something went wrong!");
     }
 
     setLoading(false);
-
-    // Reset form
     setCourse({
       title: "",
       description: "",
@@ -108,6 +114,7 @@ const CourseCreate = () => {
     });
     setThumbnail(null);
     setVideoLinks([""]);
+    setAssignments([{ title: "", description: "", link: "" }]);
   };
 
   return (
@@ -115,9 +122,8 @@ const CourseCreate = () => {
       <h2 className="text-2xl font-bold text-indigo-600 mb-4">
         Create New Course
       </h2>
-
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Course Thumbnail */}
+        {/* Thumbnail */}
         <div>
           <label className="block font-medium mb-1">Course Thumbnail</label>
           <input
@@ -203,6 +209,7 @@ const CourseCreate = () => {
             onChange={handleChange}
             className="w-full border rounded px-3 py-2"
             rows={3}
+            required
           />
         </div>
 
@@ -215,15 +222,15 @@ const CourseCreate = () => {
             value={course.batch}
             onChange={handleChange}
             className="w-full border rounded px-3 py-2"
+            required
           />
         </div>
 
-        {/* Video Links (Lessons) */}
+        {/* Video Lessons */}
         <div>
           <label className="block font-medium mb-2">Video Lessons</label>
-
           {videoLinks.map((link, i) => (
-            <div key={i} className="flex gap-2 mb-2">
+            <div key={i} className="flex gap-2 mb-2 items-center">
               <input
                 type="text"
                 value={link}
@@ -232,9 +239,17 @@ const CourseCreate = () => {
                 placeholder={`Lesson ${i + 1} video link`}
                 required
               />
+              {videoLinks.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeVideo(i)}
+                  className="text-red-600 font-bold px-2"
+                >
+                  ✕
+                </button>
+              )}
             </div>
           ))}
-
           <button
             type="button"
             onClick={addMoreVideo}
@@ -244,7 +259,61 @@ const CourseCreate = () => {
           </button>
         </div>
 
-        {/* Submit */}
+        {/* Assignments */}
+        <div>
+          <label className="block font-medium mb-2">Assignments</label>
+          {assignments.map((assn, i) => (
+            <div key={i} className="border p-3 mb-3 rounded relative">
+              <h4 className="font-semibold mb-2">Assignment {i + 1}</h4>
+              <input
+                type="text"
+                value={assn.title}
+                onChange={(e) =>
+                  handleAssignmentChange(i, "title", e.target.value)
+                }
+                placeholder="Title"
+                className="w-full border rounded px-3 py-2 mb-2"
+                required
+              />
+              <textarea
+                value={assn.description}
+                onChange={(e) =>
+                  handleAssignmentChange(i, "description", e.target.value)
+                }
+                placeholder="Description"
+                className="w-full border rounded px-3 py-2 mb-2"
+                rows={2}
+                required
+              />
+              <input
+                type="text"
+                value={assn.link}
+                onChange={(e) =>
+                  handleAssignmentChange(i, "link", e.target.value)
+                }
+                placeholder="Google Sheet / PDF Link"
+                className="w-full border rounded px-3 py-2"
+              />
+              {assignments.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeAssignment(i)}
+                  className="absolute top-2 right-2 text-red-600 font-bold"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={addMoreAssignment}
+            className="bg-blue-600 text-white px-4 py-1 rounded"
+          >
+            + Add More Assignment
+          </button>
+        </div>
+
         <button
           type="submit"
           disabled={loading}

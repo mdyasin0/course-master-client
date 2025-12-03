@@ -68,6 +68,10 @@ const AdminCourseDetails = () => {
               <span className="font-semibold">Total Lessons:</span>{" "}
               {course.lessons.length}
             </p>
+            <p>
+              <span className="font-semibold">Total Assignments:</span>{" "}
+              {course.assignments ? course.assignments.length : 0}
+            </p>
           </div>
         </div>
       </div>
@@ -103,6 +107,34 @@ const AdminCourseDetails = () => {
                 </div>
               );
             })}
+          </div>
+        </div>
+      )}
+
+      {/* Assignments */}
+      {course.assignments && course.assignments.length > 0 && (
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold mb-6">Assignments</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {course.assignments.map((assn, index) => (
+              <div
+                key={assn._id || index}
+                className="border p-4 rounded-lg shadow hover:shadow-lg transition"
+              >
+                <h3 className="text-lg font-semibold mb-2">{assn.title}</h3>
+                <p className="text-gray-700 mb-2">{assn.description}</p>
+                {assn.link && (
+                  <a
+                    href={assn.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-indigo-600 font-medium hover:underline"
+                  >
+                    View Assignment
+                  </a>
+                )}
+              </div>
+            ))}
           </div>
         </div>
       )}

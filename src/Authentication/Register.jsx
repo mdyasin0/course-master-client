@@ -11,7 +11,6 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-     
       const firebaseUser = await register(email, password);
 
       if (firebaseUser.user.uid) {

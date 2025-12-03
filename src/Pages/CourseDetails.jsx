@@ -9,7 +9,8 @@ const CourseDetails = () => {
   const [loading, setLoading] = useState(true);
 
   // Modal state
-  const [step, setStep] = useState(1); // 1 = enter your number, 2 = payment submit
+  const [step, setStep] = useState(1);
+   // 1 = enter your number, 2 = payment submit
   const [showModal, setShowModal] = useState(false);
   const [phone, setPhone] = useState(""); // user's number for sending money
   const [method, setMethod] = useState("Bkash");
@@ -29,11 +30,31 @@ const CourseDetails = () => {
       });
   }, [id]);
 
-  const handleEnrollClick = () => {
+  const handleEnrollClick = async () => {
     if (!user) {
       alert("Please login first to enroll!");
       return;
     }
+
+    try {
+      // check enrollment before showing modal
+      const checkRes = await fetch(
+        `http://localhost:5000/check-enrollment?email=${user.email}&courseId=${id}`
+      );
+
+      const data = await checkRes.json();
+
+      if (data.exists) {
+        alert("You have already enrolled in this course!");
+        return;
+      }
+    } catch (err) {
+      console.error("Enrollment check failed:", err);
+      alert("Could not check enrollment. Try again.");
+      return;
+    }
+
+    // If not enrolled → Proceed to show modal
     setStep(1);
     setShowModal(true);
   };
@@ -69,6 +90,9 @@ const CourseDetails = () => {
       paymentMethod: method,
       transactionId: txnId,
       userId: user.uid,
+      status: "pending",
+      courseStatus: "pending",
+      assignmentStatus: "pending",
     };
 
     try {
@@ -136,6 +160,10 @@ const CourseDetails = () => {
             <p>
               <span className="font-semibold">Total Lessons:</span>{" "}
               {course.lessons.length}
+            </p>
+            <p>
+              <span className="font-semibold">Total assignments:</span>{" "}
+              {course.assignments.length}
             </p>
           </div>
           <button

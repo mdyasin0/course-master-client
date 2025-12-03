@@ -1,8 +1,10 @@
 import { Link, useNavigate } from "react-router";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../Provider/Context";
 
 const Home = () => {
   const [courses, setCourses] = useState([]);
+  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   useEffect(() => {
     fetch("http://localhost:5000/courses")
@@ -73,19 +75,23 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-[#4F46E5] text-white text-center py-12 mt-16">
-        <h2 className="text-3xl font-bold mb-4">Start Learning Today!</h2>
-        <p className="text-[#F9FAFB] mb-6">
-          Join thousands of students and instructors on Course-Master.
-        </p>
+      {!user ? (
+        <section className="bg-[#4F46E5] text-white text-center py-12 mt-16">
+          <h2 className="text-3xl font-bold mb-4">Start Learning Today!</h2>
+          <p className="text-[#F9FAFB] mb-6">
+            Join thousands of students and instructors on Course-Master.
+          </p>
 
-        <Link
-          to="/register"
-          className="bg-[#FBBF24] text-[#111827] px-6 py-3 rounded-md font-semibold hover:bg-[#fcd34d] transition"
-        >
-          Register Now
-        </Link>
-      </section>
+          <Link
+            to="/register"
+            className="bg-[#FBBF24] text-[#111827] px-6 py-3 rounded-md font-semibold hover:bg-[#fcd34d] transition"
+          >
+            Register Now
+          </Link>
+        </section>
+      ) : (
+        ""
+      )}
     </div>
   );
 };

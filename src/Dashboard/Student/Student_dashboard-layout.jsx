@@ -2,22 +2,19 @@ import { NavLink, Outlet } from "react-router";
 
 const StudentDashboardLayout = () => {
   return (
-    <div className="flex min-h-screen bg-[#F9FAFB]">
-
-      {/* LEFT SIDEBAR */}
-      <aside className="w-64 bg-white shadow-lg p-6">
-        <h2 className="text-2xl font-bold text-[#111827] mb-6">
+    <div className="bg-[#F9FAFB] min-h-screen flex">
+      {/* Left Sidebar */}
+      <div className="w-64 bg-[#4F46E5] text-white flex flex-col">
+        <h2 className="text-2xl font-bold p-6 border-b border-[#3B82F6]">
           Student Panel
         </h2>
 
-        <nav className="space-y-3">
+        <nav className="flex-1 p-4 space-y-3">
           <NavLink
-            to="courses"
+            to="/studentdashboard/courseoverview"
             className={({ isActive }) =>
-              `block px-4 py-2 rounded-lg font-medium ${
-                isActive
-                  ? "bg-[#4F46E5] text-white"
-                  : "text-[#4F46E5] border border-[#4F46E5] hover:bg-[#4F46E5] hover:text-white"
+              `block py-2 px-4 rounded font-medium ${
+                isActive ? "bg-[#3B82F6]" : "hover:bg-[#3B82F6]"
               }`
             }
           >
@@ -25,37 +22,22 @@ const StudentDashboardLayout = () => {
           </NavLink>
 
           <NavLink
-            to="assignments"
+            to="/studentdashboard/studentassignment"
             className={({ isActive }) =>
-              `block px-4 py-2 rounded-lg font-medium ${
-                isActive
-                  ? "bg-[#4F46E5] text-white"
-                  : "text-[#4F46E5] border border-[#4F46E5] hover:bg-[#4F46E5] hover:text-white"
+              `block py-2 px-4 rounded font-medium ${
+                isActive ? "bg-[#3B82F6]" : "hover:bg-[#3B82F6]"
               }`
             }
           >
             Assignments
           </NavLink>
-
-          <NavLink
-            to="profile"
-            className={({ isActive }) =>
-              `block px-4 py-2 rounded-lg font-medium ${
-                isActive
-                  ? "bg-[#4F46E5] text-white"
-                  : "text-[#4F46E5] border border-[#4F46E5] hover:bg-[#4F46E5] hover:text-white"
-              }`
-            }
-          >
-            Profile
-          </NavLink>
         </nav>
-      </aside>
+      </div>
 
-      {/* RIGHT SIDE OUTLET */}
-      <main className="flex-1 p-8">
+      {/* Right Content Area */}
+      <div className="flex-1 p-6">
         <Outlet />
-      </main>
+      </div>
     </div>
   );
 };

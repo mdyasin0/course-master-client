@@ -13,8 +13,9 @@ import AdminCourseDetails from "../Dashboard/Admin/Admincoursedetails";
 import AdminCourseUpdate from "../Dashboard/Admin/AdminCourseUpdate";
 import ProtectedRoute from "../Provider/ProtectedRoute";
 import AdminEnrollments from "../Dashboard/Admin/AdminEnrollments";
-
-
+import CourseOverview from "../Dashboard/Student/CourseOverview";
+import StudentAssignment from "../Dashboard/Student/StudentAssignment";
+import ManageAssignment from "../Dashboard/Admin/ManageAssignment";
 
 const router = createBrowserRouter([
   {
@@ -27,41 +28,56 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-      path: "/coursedetails/:id" ,
-      element:  (
-        <ProtectedRoute>
-<CourseDetails/>
-        </ProtectedRoute>
-      )  ,
+        path: "/coursedetails/:id",
+        element: <CourseDetails />,
       },
       {
-         path: "/studentdashboard" ,
-         element: <StudentDashboardLayout/> ,
-      },{
-       path: "/admindashboard" ,
-       element: <AdminDashboard/> ,
-       children: [
-        {
-            path: "/admindashboard/coursecreate" ,
-            element: <CourseCreate/> ,
-        },{
-          path:"/admindashboard/coursemanage" ,
-          element: <CourseManage/> ,
-        },{
-          path: "/admindashboard/admincoursedetails/:id",
-          element: <AdminCourseDetails/> ,
-        },{
-          path:"/admindashboard/Admincourseupdate/:id" ,
-          element: <AdminCourseUpdate/> ,
-        },{
-         path: "/admindashboard/adminenrollments" ,
-         element: <AdminEnrollments/> ,
-        }
-       ]
+        path: "/studentdashboard",
+        element: <StudentDashboardLayout />,
+        children: [
+          {
+            path: "/studentdashboard/courseoverview",
+            element: <CourseOverview />,
+          },
+          {
+            path: "/studentdashboard/studentassignment",
+            element: <StudentAssignment />,
+          },
+        ],
+      },
+      {
+        path: "/admindashboard",
+        element: <AdminDashboard />,
+        children: [
+          {
+            path: "/admindashboard/coursecreate",
+            element: <CourseCreate />,
+          },
+          {
+            path: "/admindashboard/coursemanage",
+            element: <CourseManage />,
+          },
+          {
+            path: "/admindashboard/admincoursedetails/:id",
+            element: <AdminCourseDetails />,
+          },
+          {
+            path: "/admindashboard/Admincourseupdate/:id",
+            element: <AdminCourseUpdate />,
+          },
+          {
+            path: "/admindashboard/adminenrollments",
+            element: <AdminEnrollments />,
+          },
+          {
+            path: "/admindashboard/manageassignment",
+            element: <ManageAssignment />,
+          },
+        ],
       },
       {
         path: "/courses",
-        element: <Courses/> ,
+        element: <Courses />,
       },
       {
         path: "/login",

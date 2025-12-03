@@ -4,31 +4,58 @@ import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useLocation, useNavigate } from "react-router";
 import { AuthContext } from "../Provider/Context";
 
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/"; 
+  const from = location.state?.from?.pathname || "/";
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       await login(email, password);
       alert("Login successful!");
-     navigate(from, { replace: true }); 
+      navigate(from, { replace: true });
     } catch (error) {
       console.error(error);
       alert(error.message);
     }
   };
-  
+
   const handleGoogleLogin = async () => {
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
-      alert("Google login successful!");
-      navigate(from, { replace: true }); 
+      const result = await signInWithPopup(auth, provider);
+      const firebaseUser = result.user;
+
+      //data from google 
+      const name = firebaseUser.displayName || "No Name";
+      const email = firebaseUser.email;
+
+      // checking  , is  user already in database ?
+      const res = await fetch("http://localhost:5000/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email,
+          password: "google-login",
+          role: "student",
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        alert("Google login successful!");
+        navigate(from, { replace: true });
+      } else {
+        // if already register , just login
+        alert("Welcome back! Login successful!");
+        navigate(from, { replace: true });
+      }
     } catch (error) {
       console.error(error);
       alert(error.message);
@@ -74,10 +101,7 @@ const Login = () => {
           </button>
         </form>
 
-    
-          <p className=" text-gray-400 text-center py-2">OR</p>
-          
-        
+        <p className=" text-gray-400 text-center py-2">OR</p>
 
         {/* Google Login */}
         <button

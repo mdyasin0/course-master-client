@@ -16,7 +16,7 @@ const AdminDashboard = () => {
             Courses-manage
           </Link>
           <Link
-            to = "/admindashboard/coursecreate"
+            to="/admindashboard/coursecreate"
             className="block py-2 px-4 rounded hover:bg-[#3B82F6]"
           >
             Create Course
@@ -28,10 +28,10 @@ const AdminDashboard = () => {
             manage-enrollments
           </Link>
           <Link
-            to="assignments"
+            to="/admindashboard/manageassignment"
             className="block py-2 px-4 rounded hover:bg-[#3B82F6]"
           >
-            Assignments
+            manage-assignments
           </Link>
         </nav>
       </div>

@@ -2,7 +2,6 @@ import { useState, useContext } from "react";
 import { NavLink } from "react-router";
 import { AuthContext } from "../Provider/Context";
 
-
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useContext(AuthContext);

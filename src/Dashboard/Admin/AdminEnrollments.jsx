@@ -5,7 +5,7 @@ const AdminEnrollments = () => {
   const [loading, setLoading] = useState(true);
   const [selectedEnrollment, setSelectedEnrollment] = useState(null);
 
-  // Fetch all enrollments
+
   useEffect(() => {
     fetch("http://localhost:5000/enrollments")
       .then((res) => res.json())
@@ -53,7 +53,7 @@ const AdminEnrollments = () => {
     );
   };
 
-  // Unblock → Pending 
+  // Unblock → Pending
   const handleUnblock = async (id) => {
     const ok = confirm("Unblock this enrollment?");
     if (!ok) return;
@@ -116,6 +116,7 @@ const AdminEnrollments = () => {
                 <td className="p-3">{en.transactionId}</td>
 
                 <td className="p-3 flex gap-2 justify-center flex-wrap">
+                  {/* Approve button only hides after approved */}
                   {en.status === "pending" && (
                     <button
                       onClick={() => handleApprove(en._id)}
@@ -125,7 +126,8 @@ const AdminEnrollments = () => {
                     </button>
                   )}
 
-                  {en.status === "pending" && (
+                  {/* Block button always visible except when already blocked */}
+                  {en.status !== "blocked" && (
                     <button
                       onClick={() => handleBlock(en._id)}
                       className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
@@ -134,6 +136,7 @@ const AdminEnrollments = () => {
                     </button>
                   )}
 
+                  {/* Unblock only shows when blocked */}
                   {en.status === "blocked" && (
                     <button
                       onClick={() => handleUnblock(en._id)}
@@ -143,6 +146,7 @@ const AdminEnrollments = () => {
                     </button>
                   )}
 
+                  {/* Details button always visible */}
                   <button
                     onClick={() => setSelectedEnrollment(en)}
                     className="bg-accent text-black px-3 py-1 rounded hover:bg-yellow-400"
