@@ -1,4 +1,5 @@
-import  { useState } from "react";
+import { useState } from "react";
+import Swal from "sweetalert2";
 
 const CourseCreate = () => {
   const [course, setCourse] = useState({
@@ -18,52 +19,40 @@ const CourseCreate = () => {
   ]);
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
+  const handleChange = (e) =>
     setCourse({ ...course, [e.target.name]: e.target.value });
-  };
 
   // ---------------- Video Handlers ----------------
   const addMoreVideo = () => setVideoLinks([...videoLinks, ""]);
-
   const handleVideoChange = (i, value) => {
     const updated = [...videoLinks];
     updated[i] = value;
     setVideoLinks(updated);
   };
-
   const removeVideo = (i) => {
-    if (videoLinks.length > 1) {
-      const updated = videoLinks.filter((_, index) => index !== i);
-      setVideoLinks(updated);
-    } else {
-      alert("At least one video is required!");
-    }
+    if (videoLinks.length > 1)
+      setVideoLinks(videoLinks.filter((_, index) => index !== i));
+    else Swal.fire("Error", "At least one video is required!", "warning");
   };
 
   // ---------------- Assignment Handlers ----------------
   const addMoreAssignment = () =>
     setAssignments([...assignments, { title: "", description: "", link: "" }]);
-
   const handleAssignmentChange = (index, field, value) => {
     const updated = [...assignments];
     updated[index][field] = value;
     setAssignments(updated);
   };
-
   const removeAssignment = (i) => {
-    if (assignments.length > 1) {
-      const updated = assignments.filter((_, index) => index !== i);
-      setAssignments(updated);
-    } else {
-      alert("At least one assignment is required!");
-    }
+    if (assignments.length > 1)
+      setAssignments(assignments.filter((_, index) => index !== i));
+    else Swal.fire("Error", "At least one assignment is required!", "warning");
   };
 
   // ---------------- Thumbnail Upload ----------------
   const uploadThumbnailToImgBB = async () => {
     const formData = new FormData();
     formData.append("image", thumbnail);
-
     const res = await fetch(
       `https://api.imgbb.com/1/upload?key=c0c2b847b1b59290ac14668dd140a262`,
       { method: "POST", body: formData }
@@ -76,7 +65,6 @@ const CourseCreate = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-
     try {
       let thumbnailUrl = "";
       if (thumbnail) thumbnailUrl = await uploadThumbnailToImgBB();
@@ -88,18 +76,22 @@ const CourseCreate = () => {
         assignments,
       };
 
-      const res = await fetch("http://localhost:5000/create-course", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(finalCourseData),
-      });
+      const res = await fetch(
+        "https://course-master-server.onrender.com/create-course",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(finalCourseData),
+        }
+      );
 
       const data = await res.json();
-      if (data.success) alert("Course created successfully!");
-      else alert("Failed to create course!");
+      if (data.success)
+        Swal.fire("Success", "Course created successfully!", "success");
+      else Swal.fire("Error", "Failed to create course!", "error");
     } catch (error) {
       console.error(error);
-      alert("Something went wrong!");
+      Swal.fire("Error", "Something went wrong!", "error");
     }
 
     setLoading(false);
@@ -118,10 +110,11 @@ const CourseCreate = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white shadow rounded mt-8">
-      <h2 className="text-2xl font-bold text-indigo-600 mb-4">
+    <div className="max-w-3xl mx-auto p-4 sm:p-6 bg-white shadow rounded mt-6">
+      <h2 className="text-xl sm:text-2xl font-bold text-indigo-600 mb-4 text-center sm:text-left">
         Create New Course
       </h2>
+
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Thumbnail */}
         <div>
@@ -134,49 +127,36 @@ const CourseCreate = () => {
           />
         </div>
 
-        {/* Course Title */}
-        <div>
-          <label className="block font-medium mb-1">Course Title</label>
-          <input
-            type="text"
-            name="title"
-            value={course.title}
-            onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
-            required
-          />
-        </div>
-
-        {/* Description */}
-        <div>
-          <label className="block font-medium mb-1">Description</label>
-          <textarea
-            name="description"
-            value={course.description}
-            onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
-            rows={3}
-            required
-          />
-        </div>
-
-        {/* Instructor */}
-        <div>
-          <label className="block font-medium mb-1">Instructor</label>
-          <input
-            type="text"
-            name="instructor"
-            value={course.instructor}
-            onChange={handleChange}
-            className="w-full border rounded px-3 py-2"
-            required
-          />
-        </div>
-
-        {/* Price + Category */}
-        <div className="grid grid-cols-2 gap-4">
+        {/* Title & Instructor */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block mb-1 font-medium">Price</label>
+            <label className="block font-medium mb-1">Course Title</label>
+            <input
+              type="text"
+              name="title"
+              value={course.title}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2"
+              required
+            />
+          </div>
+          <div>
+            <label className="block font-medium mb-1">Instructor</label>
+            <input
+              type="text"
+              name="instructor"
+              value={course.instructor}
+              onChange={handleChange}
+              className="w-full border rounded px-3 py-2"
+              required
+            />
+          </div>
+        </div>
+
+        {/* Price & Category */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block font-medium mb-1">Price</label>
             <input
               type="number"
               name="price"
@@ -186,9 +166,8 @@ const CourseCreate = () => {
               required
             />
           </div>
-
           <div>
-            <label className="block mb-1 font-medium">Category</label>
+            <label className="block font-medium mb-1">Category</label>
             <input
               type="text"
               name="category"
@@ -200,7 +179,18 @@ const CourseCreate = () => {
           </div>
         </div>
 
-        {/* Syllabus */}
+        {/* Description & Syllabus */}
+        <div>
+          <label className="block font-medium mb-1">Description</label>
+          <textarea
+            name="description"
+            value={course.description}
+            onChange={handleChange}
+            className="w-full border rounded px-3 py-2"
+            rows={3}
+            required
+          />
+        </div>
         <div>
           <label className="block font-medium mb-1">Syllabus</label>
           <textarea
@@ -230,7 +220,10 @@ const CourseCreate = () => {
         <div>
           <label className="block font-medium mb-2">Video Lessons</label>
           {videoLinks.map((link, i) => (
-            <div key={i} className="flex gap-2 mb-2 items-center">
+            <div
+              key={i}
+              className="flex flex-col sm:flex-row gap-2 mb-2 items-start sm:items-center"
+            >
               <input
                 type="text"
                 value={link}
@@ -243,7 +236,7 @@ const CourseCreate = () => {
                 <button
                   type="button"
                   onClick={() => removeVideo(i)}
-                  className="text-red-600 font-bold px-2"
+                  className="text-red-600 font-bold px-2 mt-2 sm:mt-0"
                 >
                   ✕
                 </button>
@@ -253,7 +246,7 @@ const CourseCreate = () => {
           <button
             type="button"
             onClick={addMoreVideo}
-            className="bg-green-600 text-white px-4 py-1 rounded"
+            className="bg-green-600 text-white px-4 py-1 rounded mt-1"
           >
             + Add More
           </button>
@@ -317,7 +310,7 @@ const CourseCreate = () => {
         <button
           type="submit"
           disabled={loading}
-          className="bg-indigo-600 text-white px-6 py-2 rounded mt-3"
+          className="bg-indigo-600 text-white px-6 py-2 rounded w-full sm:w-auto mt-3"
         >
           {loading ? "Creating..." : "Create Course"}
         </button>

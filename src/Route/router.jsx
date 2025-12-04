@@ -11,11 +11,14 @@ import CourseDetails from "../Pages/CourseDetails";
 import CourseManage from "../Dashboard/Admin/CourseManage";
 import AdminCourseDetails from "../Dashboard/Admin/Admincoursedetails";
 import AdminCourseUpdate from "../Dashboard/Admin/AdminCourseUpdate";
-import ProtectedRoute from "../Provider/ProtectedRoute";
 import AdminEnrollments from "../Dashboard/Admin/AdminEnrollments";
 import CourseOverview from "../Dashboard/Student/CourseOverview";
 import StudentAssignment from "../Dashboard/Student/StudentAssignment";
 import ManageAssignment from "../Dashboard/Admin/ManageAssignment";
+import Rolemanage from "../Dashboard/Admin/Rolemanage";
+import ProtectedRoute from "../Provider/ProtectedRoute";
+import AdminRoute from "../Provider/AdminRoute";
+import StudentRoute from "../Provider/StudentRoute";
 
 const router = createBrowserRouter([
   {
@@ -33,45 +36,135 @@ const router = createBrowserRouter([
       },
       {
         path: "/studentdashboard",
-        element: <StudentDashboardLayout />,
+        element: (
+          <ProtectedRoute>
+            <StudentRoute>
+              <StudentDashboardLayout />
+            </StudentRoute>
+          </ProtectedRoute>
+        ),
         children: [
           {
+            index: true,
+            element: (
+              <ProtectedRoute>
+                <StudentRoute>
+                  <CourseOverview />
+                </StudentRoute>
+              </ProtectedRoute>
+            ),
+          },
+          {
             path: "/studentdashboard/courseoverview",
-            element: <CourseOverview />,
+            element: (
+              <ProtectedRoute>
+                <StudentRoute>
+                  <CourseOverview />
+                </StudentRoute>
+              </ProtectedRoute>
+            ),
           },
           {
             path: "/studentdashboard/studentassignment",
-            element: <StudentAssignment />,
+            element: (
+              <ProtectedRoute>
+                <StudentRoute>
+                  <StudentAssignment />
+                </StudentRoute>
+              </ProtectedRoute>
+            ),
           },
         ],
       },
       {
         path: "/admindashboard",
-        element: <AdminDashboard />,
+        element: (
+          <ProtectedRoute>
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          </ProtectedRoute>
+        ),
         children: [
           {
+            index: true,
+            element: (
+              <ProtectedRoute>
+                <StudentRoute>
+                  <CourseManage />
+                </StudentRoute>
+              </ProtectedRoute>
+            ),
+          },
+          {
             path: "/admindashboard/coursecreate",
-            element: <CourseCreate />,
+            element: (
+              <ProtectedRoute>
+                <AdminRoute>
+                  <CourseCreate />
+                </AdminRoute>
+              </ProtectedRoute>
+            ),
           },
           {
             path: "/admindashboard/coursemanage",
-            element: <CourseManage />,
+            element: (
+              <ProtectedRoute>
+                <AdminRoute>
+                  <CourseManage />
+                </AdminRoute>
+              </ProtectedRoute>
+            ),
           },
           {
             path: "/admindashboard/admincoursedetails/:id",
-            element: <AdminCourseDetails />,
+            element: (
+              <ProtectedRoute>
+                <AdminRoute>
+                  <AdminCourseDetails />
+                </AdminRoute>
+              </ProtectedRoute>
+            ),
           },
           {
             path: "/admindashboard/Admincourseupdate/:id",
-            element: <AdminCourseUpdate />,
+            element: (
+              <ProtectedRoute>
+                <AdminRoute>
+                  <AdminCourseUpdate />
+                </AdminRoute>
+              </ProtectedRoute>
+            ),
           },
           {
             path: "/admindashboard/adminenrollments",
-            element: <AdminEnrollments />,
+            element: (
+              <ProtectedRoute>
+                <AdminRoute>
+                  <AdminEnrollments />
+                </AdminRoute>
+              </ProtectedRoute>
+            ),
           },
           {
             path: "/admindashboard/manageassignment",
-            element: <ManageAssignment />,
+            element: (
+              <ProtectedRoute>
+                <AdminRoute>
+                  <ManageAssignment />
+                </AdminRoute>
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: "/admindashboard/rolemanage",
+            element: (
+              <ProtectedRoute>
+                <AdminRoute>
+                  <Rolemanage />
+                </AdminRoute>
+              </ProtectedRoute>
+            ),
           },
         ],
       },

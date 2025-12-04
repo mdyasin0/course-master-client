@@ -1,6 +1,8 @@
 import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../../Provider/Context";
+import Swal from "sweetalert2";
 
+// Helper functions
 const formatDateTime = (iso) => {
   try {
     return new Date(iso).toLocaleString();
@@ -9,7 +11,6 @@ const formatDateTime = (iso) => {
   }
 };
 
-//  take video id from url 
 const extractYouTubeId = (url) => {
   const regExp = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
   const match = url.match(regExp);
@@ -17,7 +18,7 @@ const extractYouTubeId = (url) => {
 };
 
 // ==========================
-// UPDATED LESSON MODAL
+// LESSON MODAL
 // ==========================
 const LessonModal = ({ lessons, enrollmentId, onClose }) => {
   const [current, setCurrent] = useState(0);
@@ -30,11 +31,10 @@ const LessonModal = ({ lessons, enrollmentId, onClose }) => {
     if (current > 0) setCurrent(current - 1);
   };
 
-  // COURSE COMPLETE handler
   const handleComplete = async () => {
     try {
       const res = await fetch(
-        `http://localhost:5000/course/complete/${enrollmentId}`,
+        `https://course-master-server.onrender.com/course/complete/${enrollmentId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -44,14 +44,28 @@ const LessonModal = ({ lessons, enrollmentId, onClose }) => {
       const data = await res.json();
 
       if (data.success) {
-        alert("🎉 Course Completed Successfully!");
+        Swal.fire({
+          icon: "success",
+          title: "🎉 Course Completed!",
+          text: "You have successfully completed this course.",
+          timer: 2000,
+          showConfirmButton: false,
+        });
         onClose();
       } else {
-        alert("Something went wrong!");
+        Swal.fire({
+          icon: "error",
+          title: "Oops!",
+          text: "Something went wrong while completing the course.",
+        });
       }
     } catch (error) {
       console.error(error);
-      alert("Error completing course.");
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to complete the course. Please try again.",
+      });
     }
   };
 
@@ -64,11 +78,11 @@ const LessonModal = ({ lessons, enrollmentId, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 p-4">
-      <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl p-6 relative overflow-hidden">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-full md:max-w-3xl p-4 md:p-6 relative overflow-hidden">
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-black text-lg"
+          className="absolute top-3 right-3 md:top-4 md:right-4 text-gray-500 hover:text-black text-lg md:text-xl"
         >
           ✕
         </button>
@@ -96,7 +110,7 @@ const LessonModal = ({ lessons, enrollmentId, onClose }) => {
         </p>
 
         {/* Navigation Buttons */}
-        <div className="flex justify-between mt-4">
+        <div className="flex flex-col sm:flex-row justify-between mt-4 gap-2">
           <button
             onClick={goPrev}
             disabled={current === 0}
@@ -122,7 +136,7 @@ const LessonModal = ({ lessons, enrollmentId, onClose }) => {
         {current === lessons.length - 1 && (
           <button
             onClick={handleComplete}
-            className="mt-5 w-full py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+            className="mt-4 md:mt-5 w-full py-3 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
           >
             Complete Course
           </button>
@@ -150,7 +164,9 @@ const AvailableCourses = () => {
     }
 
     setLoading(true);
-    fetch(`http://localhost:5000/user/enrollments-with-courses/${user.email}`)
+    fetch(
+      `https://course-master-server.onrender.com/user/enrollments-with-courses/${user.email}`
+    )
       .then((res) => res.json())
       .then((data) => {
         if (data.success) setCombined(data.combined || []);
@@ -164,27 +180,39 @@ const AvailableCourses = () => {
       });
   }, [user]);
 
-  if (loading) return <p className="text-center text-xl">Loading...</p>;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-screen text-xl space-x-3">
+        <span className="loading loading-bars loading-xs"></span>
+        <span className="loading loading-bars loading-sm"></span>
+        <span className="loading loading-bars loading-md"></span>
+        <span className="loading loading-bars loading-lg"></span>
+        <span className="loading loading-bars loading-xl"></span>
+      </div>
+    );
+
   if (!user)
     return <p className="text-center">Please login to see your courses.</p>;
   if (!combined.length)
     return <p className="text-center">No enrolled courses found.</p>;
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
+    <div className="p-4 sm:p-6 md:p-6 bg-gray-50 min-h-screen">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-2xl font-bold mb-4">Available Courses</h2>
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4">
+          Available Courses
+        </h2>
 
         <div className="bg-white shadow rounded-lg overflow-x-auto">
-          <table className="min-w-full divide-y">
+          <table className="min-w-full divide-y text-sm sm:text-base">
             <thead className="bg-gray-100">
               <tr>
-                <th className="px-4 py-3">Title</th>
-                <th className="px-4 py-3">Instructor</th>
-                <th className="px-4 py-3">Name</th>
-                <th className="px-4 py-3">Enrolled At</th>
-                <th className="px-4 py-3 text-center">Details</th>
-                <th className="px-4 py-3 text-center">Start</th>
+                <th className="px-3 sm:px-4 py-2 text-left">Title</th>
+                <th className="px-3 sm:px-4 py-2 text-left">Instructor</th>
+                <th className="px-3 sm:px-4 py-2 text-left">Name</th>
+                <th className="px-3 sm:px-4 py-2 text-left">Enrolled At</th>
+                <th className="px-3 sm:px-4 py-2 text-center">Details</th>
+                <th className="px-3 sm:px-4 py-2 text-center">Start</th>
               </tr>
             </thead>
 
@@ -196,35 +224,40 @@ const AvailableCourses = () => {
                   enrollment.courseId;
 
                 return (
-                  <tr key={enrollment._id}>
-                    <td className="px-4 py-3 font-semibold">
+                  <tr
+                    key={enrollment._id}
+                    className="hover:bg-gray-50 transition"
+                  >
+                    <td className="px-3 sm:px-4 py-2 font-semibold">
                       {course?.title || "Course not found"}
                     </td>
-                    <td className="px-4 py-3">{course?.instructor || "-"}</td>
-                    <td className="px-4 py-3">{enrollment.name}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-3 sm:px-4 py-2">
+                      {course?.instructor || "-"}
+                    </td>
+                    <td className="px-3 sm:px-4 py-2">{enrollment.name}</td>
+                    <td className="px-3 sm:px-4 py-2">
                       {formatDateTime(enrollment.createdAt)}
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-3 sm:px-4 py-2 text-center">
                       <button
                         onClick={() =>
                           setModalCourse(course || { title: "Details" })
                         }
-                        className="px-3 py-1 border border-indigo-600 text-indigo-600 rounded-md hover:bg-indigo-600 hover:text-white transition"
+                        className="px-2 sm:px-3 py-1 border border-indigo-600 text-indigo-600 rounded-md hover:bg-indigo-600 hover:text-white transition"
                       >
                         Details
                       </button>
                     </td>
 
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-3 sm:px-4 py-2 text-center">
                       <button
                         onClick={() => {
                           setOpenLessonsFor(
                             openLessonsFor === courseId ? null : courseId
                           );
-                          setSelectedEnrollmentId(enrollment._id); // important
+                          setSelectedEnrollmentId(enrollment._id);
                         }}
-                        className="px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                        className="px-2 sm:px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition"
                       >
                         Start Course
                       </button>
@@ -258,11 +291,12 @@ const AvailableCourses = () => {
 
         {/* DETAILS MODAL */}
         {modalCourse && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-            <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl p-6">
-              {/* Header */}
-              <div className="flex justify-between items-center mb-4 border-b pb-3">
-                <h3 className="text-xl font-bold">{modalCourse.title}</h3>
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-2 sm:p-4">
+            <div className="bg-white rounded-xl shadow-xl w-full max-w-full sm:max-w-3xl p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 border-b pb-3 gap-2 sm:gap-0">
+                <h3 className="text-lg sm:text-xl font-bold">
+                  {modalCourse.title}
+                </h3>
                 <button
                   onClick={() => setModalCourse(null)}
                   className="text-gray-600 hover:text-black"
@@ -270,14 +304,11 @@ const AvailableCourses = () => {
                   ✕
                 </button>
               </div>
-
-              {/* Body */}
               <p className="text-gray-700">{modalCourse.description}</p>
-
-              <div className="flex justify-end mt-6">
+              <div className="flex justify-end mt-4 sm:mt-6">
                 <button
                   onClick={() => setModalCourse(null)}
-                  className="px-5 py-2 border border-indigo-600 text-indigo-600 rounded-md hover:bg-indigo-600 hover:text-white"
+                  className="px-4 sm:px-5 py-2 border border-indigo-600 text-indigo-600 rounded-md hover:bg-indigo-600 hover:text-white transition"
                 >
                   Close
                 </button>

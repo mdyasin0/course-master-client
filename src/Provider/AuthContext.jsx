@@ -13,8 +13,25 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        try {
+          // Backend  user data fetch
+          const res = await fetch(`https://course-master-server.onrender.com/user?email=${currentUser.email}`);
+          const data = await res.json();
+          if (data.success) {
+            // Firebase user + backend role merge
+            setUser({ ...currentUser, role: data.user.role });
+          } else {
+            setUser({ ...currentUser, role: "student" }); // default role
+          }
+        } catch (err) {
+          console.error("Error fetching user role:", err);
+          setUser({ ...currentUser, role: "student" });
+        }
+      } else {
+        setUser(null);
+      }
       setLoading(false);
     });
 

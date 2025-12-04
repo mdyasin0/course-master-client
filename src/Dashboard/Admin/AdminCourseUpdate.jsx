@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router";
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 const AdminCourseUpdate = () => {
   const { id } = useParams();
@@ -16,13 +17,12 @@ const AdminCourseUpdate = () => {
     syllabus: "",
     batch: "",
     thumbnail: "",
-    lessons: [""], // Minimum 1 lesson
+    lessons: [""],
     assignments: [{ title: "", description: "", link: "" }],
-     // Minimum 1 assignment
   });
 
   useEffect(() => {
-    fetch(`http://localhost:5000/course/${id}`)
+    fetch(`https://course-master-server.onrender.com/course/${id}`)
       .then((res) => res.json())
       .then((data) => {
         if (data.success && data.course) {
@@ -50,12 +50,10 @@ const AdminCourseUpdate = () => {
       });
   }, [id]);
 
-  // Handle normal input changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Lessons
   const handleLessonChange = (index, value) => {
     const newLessons = [...formData.lessons];
     newLessons[index] = value;
@@ -71,11 +69,10 @@ const AdminCourseUpdate = () => {
       const newLessons = formData.lessons.filter((_, i) => i !== index);
       setFormData({ ...formData, lessons: newLessons });
     } else {
-      alert("Minimum 1 lesson required");
+      Swal.fire("Error", "Minimum 1 lesson required", "warning");
     }
   };
 
-  // Assignments
   const handleAssignmentChange = (index, field, value) => {
     const newAssignments = [...formData.assignments];
     newAssignments[index][field] = value;
@@ -97,23 +94,21 @@ const AdminCourseUpdate = () => {
       const newAssignments = formData.assignments.filter((_, i) => i !== index);
       setFormData({ ...formData, assignments: newAssignments });
     } else {
-      alert("Minimum 1 assignment required");
+      Swal.fire("Error", "Minimum 1 assignment required", "warning");
     }
   };
 
-  // Submit
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Frontend validation
     if (formData.lessons.length < 1) {
-      return alert("Minimum 1 lesson required");
+      return Swal.fire("Error", "Minimum 1 lesson required", "warning");
     }
     if (formData.assignments.length < 1) {
-      return alert("Minimum 1 assignment required");
+      return Swal.fire("Error", "Minimum 1 assignment required", "warning");
     }
 
-    fetch(`http://localhost:5000/course/${id}`, {
+    fetch(`https://course-master-server.onrender.com/course/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
@@ -121,10 +116,14 @@ const AdminCourseUpdate = () => {
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
-          alert("Course updated successfully!");
-          navigate("/admindashboard/coursemanage");
+          Swal.fire({
+            icon: "success",
+            title: "Course updated successfully!",
+            showConfirmButton: false,
+            timer: 1500,
+          }).then(() => navigate("/admindashboard/coursemanage"));
         } else {
-          alert("Update failed!");
+          Swal.fire("Error", "Update failed!", "error");
         }
       })
       .catch((err) => console.error(err));
@@ -133,10 +132,11 @@ const AdminCourseUpdate = () => {
   if (loading) return <p className="text-center mt-10">Loading...</p>;
 
   return (
-    <div className="max-w-5xl mx-auto p-6 bg-white rounded shadow mt-10">
-      <h2 className="text-2xl font-bold mb-6">Update Course</h2>
+    <div className="max-w-5xl mx-auto p-4 sm:p-6 md:p-8 bg-white rounded shadow mt-6 md:mt-10">
+      <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center md:text-left">
+        Update Course
+      </h2>
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Normal Fields */}
         {[
           "title",
           "description",
@@ -148,7 +148,7 @@ const AdminCourseUpdate = () => {
           "thumbnail",
         ].map((key) => (
           <div key={key} className="flex flex-col">
-            <label className="font-semibold">
+            <label className="font-semibold mb-1">
               {key.charAt(0).toUpperCase() + key.slice(1)}
             </label>
             <input
@@ -157,7 +157,7 @@ const AdminCourseUpdate = () => {
               value={formData[key]}
               onChange={handleChange}
               required
-              className="border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
             />
           </div>
         ))}
@@ -166,7 +166,10 @@ const AdminCourseUpdate = () => {
         <div className="space-y-2">
           <label className="font-semibold">Lessons (Video URLs)</label>
           {formData.lessons.map((lesson, index) => (
-            <div key={index} className="flex gap-2 items-center">
+            <div
+              key={index}
+              className="flex flex-col sm:flex-row gap-2 items-start sm:items-center"
+            >
               <input
                 type="text"
                 value={lesson}
@@ -177,7 +180,7 @@ const AdminCourseUpdate = () => {
               <button
                 type="button"
                 onClick={() => handleRemoveLesson(index)}
-                className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
+                className="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition mt-2 sm:mt-0"
               >
                 Remove
               </button>
@@ -196,7 +199,10 @@ const AdminCourseUpdate = () => {
         <div className="space-y-2">
           <label className="font-semibold">Assignments</label>
           {formData.assignments.map((assn, index) => (
-            <div key={index} className="flex gap-2 items-center">
+            <div
+              key={index}
+              className="flex flex-col sm:flex-row gap-2 items-start sm:items-center"
+            >
               <input
                 type="text"
                 placeholder="Title"
@@ -205,7 +211,7 @@ const AdminCourseUpdate = () => {
                   handleAssignmentChange(index, "title", e.target.value)
                 }
                 required
-                className="border px-2 py-1 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border px-2 py-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <input
                 type="text"
@@ -215,7 +221,7 @@ const AdminCourseUpdate = () => {
                   handleAssignmentChange(index, "description", e.target.value)
                 }
                 required
-                className="border px-2 py-1 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border px-2 py-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <input
                 type="text"
@@ -224,12 +230,12 @@ const AdminCourseUpdate = () => {
                 onChange={(e) =>
                   handleAssignmentChange(index, "link", e.target.value)
                 }
-                className="border px-2 py-1 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border px-2 py-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button
                 type="button"
                 onClick={() => handleRemoveAssignment(index)}
-                className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition"
+                className="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition mt-2 sm:mt-0"
               >
                 Remove
               </button>
@@ -246,7 +252,7 @@ const AdminCourseUpdate = () => {
 
         <button
           type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition mt-4"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition mt-4 w-full sm:w-auto"
         >
           Update Course
         </button>
