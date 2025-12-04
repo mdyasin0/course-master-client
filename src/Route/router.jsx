@@ -90,9 +90,9 @@ const router = createBrowserRouter([
             index: true,
             element: (
               <ProtectedRoute>
-                <StudentRoute>
+              <AdminRoute>
                   <CourseManage />
-                </StudentRoute>
+                </AdminRoute>
               </ProtectedRoute>
             ),
           },

@@ -5,16 +5,30 @@ import Swal from "sweetalert2";
 
 const StudentRoute = ({ children }) => {
   const { user, loading } = useContext(AuthContext);
-  const [showAlert, setShowAlert] = useState(false);
+  const [accessDenied, setAccessDenied] = useState(false);
 
   useEffect(() => {
     if (user && user.role !== "student") {
-      setShowAlert(true);
+      // Set accessDenied state true, then show alert
+      setAccessDenied(true);
     }
   }, [user]);
 
+  useEffect(() => {
+    if (accessDenied) {
+      Swal.fire({
+        icon: "error",
+        title: "Access Denied",
+        text: "You have no access to this page",
+        confirmButtonText: "OK",
+      }).then(() => {
+        // After alert closes, redirect
+        setAccessDenied(false);
+      });
+    }
+  }, [accessDenied]);
+
   if (loading) {
-    // Loading spinner
     return (
       <div className="flex justify-center items-center h-screen">
         <span className="loading loading-bars loading-xl"></span>
@@ -23,17 +37,16 @@ const StudentRoute = ({ children }) => {
   }
 
   if (!user) {
-    // If not logged in
     return <Navigate to="/login" replace />;
   }
 
-  if (showAlert) {
-    Swal.fire({
-      icon: "error",
-      title: "Access Denied",
-      text: "You have no access to this page",
-    });
-    setShowAlert(false); // Show only once
+  if (accessDenied) {
+    // While alert is open, render nothing
+    return null;
+  }
+
+  if (user.role !== "student") {
+    // Redirect after alert closes
     return <Navigate to="/login" replace />;
   }
 
